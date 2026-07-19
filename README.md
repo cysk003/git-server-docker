@@ -172,23 +172,25 @@ information. Example values for `SSH_AUTH_METHODS`:
 | 'publickey password' | SSH public key _or_ password            |
 | 'publickey,password' | SSH public key _followed by_ a password |
 
-Of course, you can also mount your custom configuration file for the SSH
-server at `/etc/ssh/sshd_config` for better fine tuning. The default
-configuration is provided at [`examples/sshd_config`](examples/sshd_config).
+[2]: https://man.openbsd.org/sshd_config#AuthenticationMethods
+
+
+### Custom SSH server configuration file
+
+By default this image ships the SSH server configured as per the default
+configuration provided by OpenSSH developers. This configuration might not
+necessarily be the most secure. Therefore you can mount your custom
+configuration file for the SSH server within `/etc/ssh/sshd_config.d` folder
+for better fine tuning. An example custom hardened configuration is provided
+at [`examples/10-harden-server.conf`](examples/10-harden-server.conf).
 
 ```yaml
 services:
   git-server:
     ...
     volumes:
-      - examples/sshd_config:/etc/ssh/sshd_config:ro
+      - examples/10-harden-server.conf:/etc/ssh/sshd_config.d/10-harden-server.conf:ro
 ```
-
-> **NOTE**: If you mount a custom SSH server configuration file
-> (e.g. `/etc/ssh/sshd_config`), using `SSH_AUTH_METHODS` is discouraged since
-> it would try to rewrite such file.
-
-[2]: https://man.openbsd.org/sshd_config#AuthenticationMethods
 
 
 ### Custom SSH Host Keys
