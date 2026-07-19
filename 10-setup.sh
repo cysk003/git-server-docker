@@ -71,6 +71,11 @@ else
     warn "Login using public keys will not be available."
 fi
 
+## Set up proper permissions for .ssh folder
+! chmod 700 ${GIT_HOME}/.ssh
+! chmod 600 ${GIT_HOME}/.ssh/*
+! chmod 644 ${GIT_HOME}/.ssh/*.pub
+
 # Replace host SSH keys (if given)
 if [ -n "${SSH_HOST_KEYS_PATH-}" ]; then
     if [ -d "${SSH_HOST_KEYS_PATH}" ]; then
