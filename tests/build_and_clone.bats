@@ -95,3 +95,8 @@ clone() {
              --env SSH_AUTH_METHODS="publickey keyboard-interactive"
     clone
 }
+
+@test "Test custom SSHD config" {
+    image_up --volume ./examples/sshd_config:/etc/ssh/sshd_config:ro
+    clone
+}
