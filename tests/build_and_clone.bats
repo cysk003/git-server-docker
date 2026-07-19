@@ -48,6 +48,14 @@ clone() {
     git clone "${1-ssh://git@localhost:2222/srv/git/projects/test-repo.dc.git}"
 }
 
+set_pub_key() {
+    if ! _key_file=$(ls ~/.ssh/*.pub); then
+        skip "No public key found"
+    fi
+    tmp_key_file=$(mktemp)
+    cp $_key_file $tmp_key_file
+}
+
 @test "Basic configuration" {
     image_up
     clone
@@ -86,17 +94,15 @@ clone() {
 }
 
 @test "Test cloning using SSH keys" {
-    if ! _key_file=$(ls ~/.ssh/*.pub); then
-        skip "No public key found"
-    fi
-    tmp_key_file=$(mktemp)
-    cp $_key_file $tmp_key_file
+    set_pub_key
     image_up --volume $tmp_key_file:/home/git/.ssh/authorized_keys \
              --env SSH_AUTH_METHODS="publickey keyboard-interactive"
     clone
 }
 
-@test "Test custom SSHD config" {
-    image_up --volume ./examples/sshd_config:/etc/ssh/sshd_config:ro
+@test "Test custom hardened SSHD config" {
+    set_pub_key
+    image_up --volume $tmp_key_file:/home/git/.ssh/authorized_keys \
+             --volume ./examples/10-harden-server.conf:/etc/ssh/sshd_config.d/10-harden-server.conf:ro
     clone
 }
