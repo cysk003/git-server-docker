@@ -90,15 +90,12 @@ if [ -n "${SSH_HOST_KEYS_PATH-}" ]; then
     fi
 fi
 
-# Configure the SSH server configuration file
-SSHD_CONFIG_FILE='/etc/ssh/sshd_config'
+# Configure the SSH server
+# Options defined in `/etc/ssh/sshd_config.d/*` take precedence over
+# `/etc/ssh/sshd_config`
+SSHD_CONFIG_FILE='/etc/ssh/sshd_config.d/20-custom-env.conf'
 if [ -n "${SSH_AUTH_METHODS-}" ]; then
-    if sed -i "s/.*AuthenticationMethods.*//g" ${SSHD_CONFIG_FILE}; then
-        echo "AuthenticationMethods ${SSH_AUTH_METHODS}" >> ${SSHD_CONFIG_FILE}
-    else
-        warn "File '${SSHD_CONFIG_FILE}' is not modifiable"
-        warn "Unable to set SSH_AUTH_METHODS"
-    fi
+    echo "AuthenticationMethods ${SSH_AUTH_METHODS}" >> ${SSHD_CONFIG_FILE}
 fi
 
 # Link the repositories folder on git user's home directory
